@@ -1,0 +1,48 @@
+name: ALICE Registry CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test-rust:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [core-engine, api-gateway]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services/${{ matrix.service }}
+      - run: cd services/${{ matrix.service }} && cargo check
+      - run: cd services/${{ matrix.service }} && cargo test
+      - run: cd services/${{ matrix.service }} && cargo clippy -- -W clippy::all -W clippy::pedantic -D warnings
+
+  fmt:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [core-engine, api-gateway]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cd services/${{ matrix.service }} && cargo fmt -- --check
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd frontend && npm ci || npm install
+      - run: cd frontend && npm run type-check

@@ -1,0 +1,46 @@
+[package]
+name = "alice-registry-gateway"
+version = "0.1.0"
+edition = "2021"
+authors = ["Moroya Sakamoto"]
+description = "OCI registry core engine with push/pull, layer diffing, and content search"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/ext-sakamoro/ALICE-Registry"
+keywords = ["registry", "oci", "artifact", "diffing", "search"]
+publish = false
+
+[lib]
+name = "alice_registry_gateway"
+path = "src/lib.rs"
+
+[[bin]]
+name = "alice-registry-gateway"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+uuid = { version = "1", features = ["v4"] }
+
+alice-vcs = { path = "../../../ALICE-VCS", optional = true }
+alice-sdf = { path = "../../../ALICE-SDF", optional = true }
+alice-zip = { path = "../../../ALICE-Zip/libalice", optional = true }
+
+[features]
+default = []
+alice-core = ["alice-vcs", "alice-sdf", "alice-zip"]
+
+[dev-dependencies]
+proptest = "1.4"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"
