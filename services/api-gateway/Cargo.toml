@@ -2,7 +2,7 @@
 name = "api-gateway"
 version = "0.1.0"
 edition = "2021"
-authors = ["Moroya Sakamoto"]
+authors = ["Moroya Sakamoto <sakamoro@alicelaw.net>"]
 description = "JWT/API-Key auth gateway with rate limiting and reverse proxy for ALICE Registry"
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/ext-sakamoro/ALICE-Registry"

@@ -2,7 +2,7 @@
 name = "alice-registry-gateway"
 version = "0.1.0"
 edition = "2021"
-authors = ["Moroya Sakamoto"]
+authors = ["Moroya Sakamoto <sakamoro@alicelaw.net>"]
 description = "OCI registry core engine with push/pull, layer diffing, and content search"
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/ext-sakamoro/ALICE-Registry"
