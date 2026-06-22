@@ -21,14 +21,20 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: services/${{ matrix.service }}
-      - name: Create sibling stub (avoid path_dependencies_not_reachable)
+      - name: Create sibling stubs (avoid path_dependencies_not_reachable)
         if: matrix.service == 'core-engine'
         shell: bash
         run: |
-          mkdir -p ../ALICE-VCS/src
-          cat > ../ALICE-VCS/Cargo.toml << 'TOML'
+          for entry in \
+            "ALICE-VCS:alice-vcs" \
+            "ALICE-SDF:alice-sdf" \
+            "ALICE-Zip/libalice:alice-zip"; do
+            dir=$(echo "$entry" | cut -d: -f1)
+            pkg=$(echo "$entry" | cut -d: -f2)
+            mkdir -p "../$dir/src"
+            cat > "../$dir/Cargo.toml" << TOML
           [package]
-          name = "alice-vcs"
+          name = "$pkg"
           version = "0.1.0"
           edition = "2021"
           [features]
@@ -37,7 +43,8 @@ jobs:
           [lib]
           path = "src/lib.rs"
           TOML
-          echo "" > ../ALICE-VCS/src/lib.rs
+            echo "" > "../$dir/src/lib.rs"
+          done
       - run: cd services/${{ matrix.service }} && cargo check
       - run: cd services/${{ matrix.service }} && cargo test
       - run: cd services/${{ matrix.service }} && cargo clippy -- -W clippy::all -W clippy::pedantic -D warnings
